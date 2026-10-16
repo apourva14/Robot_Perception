@@ -1,3 +1,5 @@
 To run the simulation:
-python lidar_live.py                          # clear weather
-python lidar_live.py --scenario dense_fog     # start in fog
+
+python3 lidar_live.py                          # clear weather
+
+python3 lidar_live.py --scenario dense_fog     # start in fog
