@@ -1,0 +1,73 @@
+// nav_config.jsonc  -  inputs of lidar_nav.py (LiDAR-in-the-loop navigation)
+//
+//   python lidar_nav.py                         run every scenario below, write figures + GIF to nav_out/
+//   python lidar_nav.py --scenario fog          run one scenario only
+//   python lidar_nav.py --no-gif                skip the animation (faster)
+//
+// The scene (ground, walls, car, sphere, pole, retro box) and the sensor physics are read from
+// base_config; only the keys listed here are added or overridden. Units: m, s, deg.
+{
+  "base_config": "lidar_config.jsonc",
+
+  // A robot-mounted sensor: lower, 16 channels, 0.5 deg azimuth steps (fast enough for ~0.1 s/scan).
+  "sensor_overrides": {
+    "n_channels": 16,
+    "vfov_lower_deg": -15.0,
+    "vfov_upper_deg": 15.0,
+    "measurements_per_cycle": 720,
+    "n_beam_samples": 3
+  },
+  "mount_height_m": 0.6,                     // sensor height above the ground on the robot
+
+  // Obstacles added on the robot's way to the goal (same syntax as scene.objects in base_config).
+  "extra_objects": [
+    { "type": "box",      "label": "crate",     "center": [13.0, 0.5, 0.6], "size": [1.5, 3.0, 1.2], "material": "concrete" },
+    { "type": "cylinder", "label": "barrel",    "base": [17.5, -2.2, 0.0], "radius": 0.4, "height": 1.0, "material": "wood" },
+    { "type": "box",      "label": "black_bin", "center": [20.5, 1.6, 0.6], "size": [1.0, 1.0, 1.2], "yaw_deg": 25, "material": "car_paint_black" }
+  ],
+
+  "robot": {
+    "start": [-2.0, 0.0],
+    "start_heading_deg": 0.0,
+    "goal": [26.0, 0.5],
+    "goal_tolerance_m": 0.5,
+    "radius_m": 0.35,                         // disc footprint used for collision checks
+    "height_m": 1.0,                          // obstacles above this height are ignored (overhangs)
+    "v_max": 1.2,                             // m/s
+    "omega_max_deg_s": 90.0,
+    "dt": 0.2,                                // control / scan period [s]
+    "max_steps": 400
+  },
+
+  "planner": {
+    "n_headings": 72,                         // candidate headings over 360 deg
+    "safety_margin_m": 0.25,                  // inflation added to the robot radius
+    "lookahead_m": 12.0,                      // free-path lengths are clipped here
+    "d_stop_m": 0.3,                          // the robot never plans to get closer than this
+    "d_slow_m": 3.0,                          // full speed only if the path ahead is longer than this
+    "w_goal": 1.0, "w_turn": 0.3, "w_free": 3.0,
+    "k_omega": 2.0,                           // heading gain [1/s]
+    "z_ground_m": 0.12                        // returns lower than this are treated as ground
+  },
+
+  "grid": {
+    "resolution_m": 0.2,
+    "extent": [-6.0, 34.0, -16.0, 20.0],      // xmin, xmax, ymin, ymax
+    "l_occ": 0.85, "l_free": -0.4, "l_clamp": 8.0
+  },
+
+  // Environmental conditions Lambda: each scenario overrides sensor keys of base_config.
+  "scenarios": [
+    { "name": "clear",      "sensor": {} },
+    { "name": "heavy_rain", "sensor": { "rain_mm_per_h": 50.0 } },
+    { "name": "dense_fog",  "sensor": { "air_extinction_per_m": 0.6 } }
+  ],
+
+  "output": {
+    "directory": "nav_out",
+    "gif_scenarios": ["clear", "dense_fog"], // animations to write (needs pillow); [] = none
+    "gif_every": 2,                           // use every n-th step as a frame
+    "gif_fps": 8,
+    "seed": 1
+  }
+}

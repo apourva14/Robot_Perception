@@ -1,0 +1,4 @@
+scenario,alpha_per_m,Rmax_rho0.05,Rmax_rho0.3,status,time_s,path_m,min_true_clearance_m,min_perceived_clearance_m,mean_returns,first_det_wall_concrete,first_det_car,first_det_wall_white,first_det_sphere,first_det_pole,first_det_retro_box,first_det_crate,first_det_barrel,first_det_black_bin
+clear,0.0002,84.2,201.4,goal,23.8,28.05,0.646,0.617,6882,22.87,6.34,27.04,9.44,8.39,7.80,14.25,19.22,10.11
+heavy_rain,0.1048,16.0,21.7,goal,23.8,28.05,0.646,0.617,6193,21.00,6.34,19.68,9.44,8.39,7.80,14.25,19.22,10.11
+dense_fog,0.6000,4.8,5.9,goal,23.6,28.23,0.667,0.638,3960,nan,nan,6.32,7.17,6.20,7.63,6.09,6.21,8.50

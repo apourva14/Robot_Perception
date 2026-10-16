@@ -1,0 +1,169 @@
+{
+  "_source": "c:\\Project - Robotics\\Python_projects\\Project_robot_perception\\LIDAR_model\\lidar_config.jsonc",
+  "simulation": {
+    "seed": 1
+  },
+  "sensor": {
+    "n_channels": 32,
+    "vfov_lower_deg": -25.0,
+    "vfov_upper_deg": 15.0,
+    "measurements_per_cycle": 1800,
+    "hfov_start_deg": -180.0,
+    "hfov_end_deg": 180.0,
+    "rotations_per_s": 10.0,
+    "min_range_m": 0.5,
+    "max_range_m": 200.0,
+    "peak_power_w": 75.0,
+    "beam_divergence_mrad": 2.0,
+    "n_beam_samples": 12,
+    "pulse_fwhm_ns": 5.0,
+    "pulse_rise_ns": 1.0,
+    "aperture_diam_m": 0.025,
+    "optical_efficiency": 0.5,
+    "noise_rms_w": 4e-09,
+    "snr_threshold": 10.0,
+    "saturation_power_w": 5e-05,
+    "range_floor_sigma_m": 0.01,
+    "noise_enabled": true,
+    "air_extinction_per_m": 0.0002,
+    "rain_mm_per_h": 0.0,
+    "rain_a": 0.01,
+    "rain_b": 0.6,
+    "return_mode": "strongest"
+  },
+  "pose": {
+    "position": [
+      0.0,
+      0.0,
+      1.8
+    ],
+    "roll_deg": 0.0,
+    "pitch_deg": 0.0,
+    "yaw_deg": 0.0,
+    "velocity": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "yaw_rate_deg_s": 0.0
+  },
+  "scene": {
+    "materials": {},
+    "objects": [
+      {
+        "type": "plane",
+        "label": "ground",
+        "point": [
+          0,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ],
+        "material": "asphalt"
+      },
+      {
+        "type": "box",
+        "label": "wall_concrete",
+        "center": [
+          22,
+          -12,
+          3.0
+        ],
+        "size": [
+          12,
+          0.6,
+          6.0
+        ],
+        "yaw_deg": 20,
+        "material": "concrete"
+      },
+      {
+        "type": "box",
+        "label": "car",
+        "center": [
+          -9,
+          4,
+          0.75
+        ],
+        "size": [
+          4.4,
+          1.8,
+          1.5
+        ],
+        "yaw_deg": 30,
+        "material": "car_paint_black"
+      },
+      {
+        "type": "box",
+        "label": "wall_white",
+        "center": [
+          30,
+          12,
+          2.0
+        ],
+        "size": [
+          0.5,
+          14,
+          4.0
+        ],
+        "yaw_deg": 0,
+        "material": "white_paint"
+      },
+      {
+        "type": "sphere",
+        "label": "sphere",
+        "center": [
+          8,
+          3,
+          1.0
+        ],
+        "radius": 1.0,
+        "material": "aluminium"
+      },
+      {
+        "type": "cylinder",
+        "label": "pole",
+        "base": [
+          6,
+          -3,
+          0
+        ],
+        "radius": 0.15,
+        "height": 4.0,
+        "material": "wood"
+      },
+      {
+        "type": "box",
+        "label": "retro_box",
+        "center": [
+          4,
+          6,
+          0.4
+        ],
+        "size": [
+          1.0,
+          1.0,
+          0.8
+        ],
+        "yaw_deg": 15,
+        "material": "retroreflector"
+      }
+    ]
+  },
+  "output": {
+    "directory": "lidar_out",
+    "save": [
+      "npz",
+      "csv",
+      "ply"
+    ],
+    "static_png": true,
+    "interactive_html": true,
+    "open_browser": false,
+    "title": null
+  }
+}

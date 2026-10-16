@@ -1,0 +1,96 @@
+// lidar_config.jsonc  -  every input of lidar_sim.py lives in this file.
+//
+//   python lidar_sim.py                                   run with this file (looked up next to the script)
+//   python lidar_sim.py --config other.jsonc              run with another file
+//   python lidar_sim.py --set sensor.rain_mm_per_h=25 --set sensor.return_mode=first
+//
+// Comments (// and /* */) are allowed. Relative paths are relative to this file's folder.
+// Unknown keys are rejected with a suggestion, so a typo can never silently fall back to a default.
+// Units: metres, degrees, seconds, watts unless the key name says otherwise.
+// Frame: right-handed, z up. Azimuth is measured from +x toward +y.
+{
+  "simulation": {
+    "seed": 1                                // noise seed (integer); null = different noise every run
+  },
+
+  // ---------------------------------------------------------------------------------------------
+  "sensor": {
+    // ---- scan geometry ----
+    "n_channels": 32,                        // number of lasers (1 = 2D LiDAR fired at vfov_upper_deg)
+    "vfov_lower_deg": -25.0,                 // lowest beam elevation
+    "vfov_upper_deg": 15.0,                  // highest beam elevation
+    "measurements_per_cycle": 1800,          // azimuth steps per 360 deg (step = 360 / N)
+    "hfov_start_deg": -180.0,                // horizontal window start
+    "hfov_end_deg": 180.0,                   // horizontal window end; a span >= 360 = full circle
+    "rotations_per_s": 10.0,                 // head spin rate; sets pulse firing times (motion skew)
+    "min_range_m": 0.5,                      // blind zone
+    "max_range_m": 200.0,                    // hard time-of-flight gate
+    // ---- transmitter ----
+    "peak_power_w": 75.0,                    // pulse peak power
+    "beam_divergence_mrad": 2.0,             // full angle at the 1/e^2 intensity points
+    "n_beam_samples": 12,                    // sub-rays per pulse (1 = pencil beam, no edge effects)
+    "pulse_fwhm_ns": 5.0,                    // pulse width; echoes closer than c*tau/2 merge into one
+    "pulse_rise_ns": 1.0,                    // pulse rise time (enters the range-noise formula)
+    // ---- receiver ----
+    "aperture_diam_m": 0.025,                // receiver aperture diameter
+    "optical_efficiency": 0.5,               // 0..1, lens + filter + detector
+    "noise_rms_w": 4e-9,                     // receiver noise, rms optical power
+    "snr_threshold": 10.0,                   // an echo is detected if (P + noise) / noise_rms >= this
+    "saturation_power_w": 5e-5,              // power mapped to intensity = 1 (output scaling only)
+    "range_floor_sigma_m": 0.01,             // range-noise floor reached at high SNR
+    "noise_enabled": true,                   // false = exact ranges and a hard detection threshold
+    // ---- atmosphere ----
+    "air_extinction_per_m": 2e-4,            // roughly 3.9 / visibility  (20 km -> 2e-4, 200 m fog -> 2e-2)
+    "rain_mm_per_h": 0.0,                    // rain rate; adds rain_a * rate^rain_b to the extinction
+    "rain_a": 0.01,                          // Cosys-AirSim default rainConstantA
+    "rain_b": 0.6,                           // Cosys-AirSim default rainConstantB
+    // ---- echo selection ----
+    "return_mode": "strongest"               // "first" | "strongest" | "last"
+  },
+
+  // ---------------------------------------------------------------------------------------------
+  "pose": {
+    "position": [0.0, 0.0, 1.8],             // sensor origin in the world frame [m]
+    "roll_deg": 0.0,                         // mounting orientation, Z-Y-X order (positive pitch = nose down)
+    "pitch_deg": 0.0,
+    "yaw_deg": 0.0,
+    "velocity": [0.0, 0.0, 0.0],             // world velocity during the sweep [m/s] -> rolling-scan skew
+    "yaw_rate_deg_s": 0.0                    // turn rate during the sweep
+  },
+
+  // ---------------------------------------------------------------------------------------------
+  "scene": {
+    // Built-in materials: asphalt, concrete, brick, wood, aluminium, white_paint, car_paint_black,
+    // retroreflector. Add or override your own here, e.g.
+    //   "my_paint": { "rho_d": 0.4, "rho_s": 0.1, "spec_exp": 80 }
+    // rho_d = diffuse reflectance, rho_s = specular lobe weight, spec_exp = lobe sharpness.
+    // An object may also give an inline dict instead of a name:  "material": { "rho_d": 0.2 }
+    "materials": {},
+
+    // Object types and their keys:
+    //   plane    point, normal
+    //   box      center, size [x, y, z], yaw_deg (rotation about z, default 0)
+    //   sphere   center, radius
+    //   cylinder base (centre of the bottom cap), radius, height   (axis along +z)
+    // Common optional keys: material (default "concrete"), label (default type_index), enabled (default true)
+    "objects": [
+      { "type": "plane",    "label": "ground",        "point": [0, 0, 0], "normal": [0, 0, 1], "material": "asphalt" },
+      { "type": "box",      "label": "wall_concrete", "center": [22, -12, 3.0], "size": [12, 0.6, 6.0], "yaw_deg": 20, "material": "concrete" },
+      { "type": "box",      "label": "car",           "center": [-9, 4, 0.75], "size": [4.4, 1.8, 1.5], "yaw_deg": 30, "material": "car_paint_black" },
+      { "type": "box",      "label": "wall_white",    "center": [30, 12, 2.0], "size": [0.5, 14, 4.0], "yaw_deg": 0, "material": "white_paint" },
+      { "type": "sphere",   "label": "sphere",        "center": [8, 3, 1.0], "radius": 1.0, "material": "aluminium" },
+      { "type": "cylinder", "label": "pole",          "base": [6, -3, 0], "radius": 0.15, "height": 4.0, "material": "wood" },
+      { "type": "box",      "label": "retro_box",     "center": [4, 6, 0.4], "size": [1.0, 1.0, 0.8], "yaw_deg": 15, "material": "retroreflector" }
+    ]
+  },
+
+  // ---------------------------------------------------------------------------------------------
+  "output": {
+    "directory": "lidar_out",                // created if missing; relative to this file's folder
+    "save": ["npz", "csv", "ply"],           // any subset of: npz, csv, ply
+    "static_png": true,                      // matplotlib overview figure (needs matplotlib)
+    "interactive_html": true,                // zoomable Plotly view (needs plotly)
+    "open_browser": false,                   // open the interactive view when finished
+    "title": null                            // figure title; null = auto-generated
+  }
+}
